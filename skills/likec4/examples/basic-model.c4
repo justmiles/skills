@@ -1,0 +1,65 @@
+// Worked example: specification + model + views in one file.
+// A real project usually splits these across files (see SKILL.md); LikeC4
+// merges every .c4/.likec4 file in the project into a single model, so the
+// split is organizational only.
+
+specification {
+  element person
+  element system
+  element service
+  element database
+  element queue {
+    style { shape queue }
+  }
+
+  relationship async {
+    notation 'Async'
+    color amber
+    line dotted
+  }
+
+  tag deprecated {
+    color #FF0000
+  }
+}
+
+model {
+  customer = person 'Customer' {
+    description 'A user of the platform'
+  }
+
+  cloud = system 'Cloud Platform' {
+    backend = service 'Backend API' {
+      technology 'Node.js'
+    }
+    db = database 'Primary DB' {
+      technology 'PostgreSQL'
+    }
+    messageBroker = queue 'Message Broker' {
+      technology 'Kafka'
+    }
+  }
+
+  customer -> cloud.backend 'opens in browser' {
+    technology 'HTTPS'
+  }
+  cloud.backend -> cloud.db 'reads/writes'
+  cloud.backend -[async]-> cloud.messageBroker 'publishes events'
+}
+
+views {
+  // Default system-context view
+  view index {
+    title 'System Context'
+    include *
+    autoLayout TopBottom
+  }
+
+  // Scoped view: zoom into the backend service and its immediate neighbors
+  view of cloud.backend {
+    title 'Backend API — Component View'
+    include *
+    include -> cloud.backend ->
+    autoLayout LeftRight
+  }
+}

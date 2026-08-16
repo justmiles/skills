@@ -1,0 +1,51 @@
+// Worked example: deployment topology for the logical elements defined in
+// basic-model.c4 (same project — files merge into one model, no import
+// needed to reference `cloud.backend` / `cloud.db` here).
+
+specification {
+  deploymentNode environment
+  deploymentNode zone
+  deploymentNode vm {
+    notation 'Virtual Machine'
+    technology 'VMware'
+  }
+
+  tag live
+}
+
+deployment {
+  environment prod 'Production' {
+    #live
+    technology 'OpenTofu'
+
+    zone eu 'EU Region' {
+      vm api1 { instanceOf cloud.backend }
+      vm api2 { instanceOf cloud.backend }
+
+      vm dbPrimary {
+        db = instanceOf cloud.db {
+          title 'Primary DB'
+          technology 'PostgreSQL with streaming replication'
+        }
+      }
+      vm dbStandby {
+        db = instanceOf cloud.db {
+          title 'Standby DB'
+        }
+      }
+
+      // paths here are relative to this `zone eu` scope
+      dbStandby.db -> dbPrimary.db 'replicates' {
+        technology 'PostgreSQL streaming replication'
+      }
+    }
+  }
+}
+
+views {
+  view deploymentProd {
+    title 'Production Deployment'
+    include *
+    autoLayout TopBottom
+  }
+}

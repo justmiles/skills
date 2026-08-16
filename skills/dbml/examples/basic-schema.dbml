@@ -1,0 +1,55 @@
+// Worked example: Project + tables + column settings + one-to-one/many-to-one
+// relationships + an Enum, all in one file. See SKILL.md for when to split
+// a schema across multiple files instead (module system) — unlike LikeC4,
+// DBML files do NOT auto-merge; each file only sees what it imports.
+
+Project blog {
+  database_type: 'PostgreSQL'
+  Note: 'Minimal blogging schema: users, profiles, posts, comments'
+}
+
+Table users {
+  id integer [pk, increment]
+  username varchar(255) [not null, unique]
+  email varchar(255) [not null, unique]
+  role varchar(50) [default: 'member']
+  created_at timestamp [default: `now()`]
+
+  Note: 'Registered application users'
+}
+
+Table user_profiles {
+  user_id integer [pk]
+  bio text
+  avatar_url varchar(255)
+}
+
+// one-to-one: the SECOND column listed is the foreign key (user_profiles.user_id)
+Ref: users.id - user_profiles.user_id
+
+Enum post_status {
+  draft
+  published
+  archived [note: 'Hidden from public view, kept for audit history']
+}
+
+Table posts {
+  id integer [pk, increment]
+  title varchar(255) [not null]
+  body text
+  status post_status [default: 'draft']
+  user_id integer [not null, ref: > users.id]   // many-to-one, inline form
+  created_at timestamp [default: `now()`]
+}
+
+Table comments {
+  id integer [pk, increment]
+  post_id integer [not null]
+  user_id integer [not null]
+  body text [not null]
+  created_at timestamp [default: `now()`]
+}
+
+// standalone (short-form) refs — equivalent to inline `ref:` settings above
+Ref: comments.post_id > posts.id
+Ref: comments.user_id > users.id

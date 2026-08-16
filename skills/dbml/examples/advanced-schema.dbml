@@ -1,0 +1,95 @@
+// Worked example: composite indexes/PKs, composite foreign keys, a
+// many-to-many join table, TablePartial injection, TableGroup, custom
+// metadata, colors, a sticky Note, and an inactive Ref. Self-contained —
+// not part of the same "project" as basic-schema.dbml (DBML files don't
+// auto-merge; see the module-system reference for how to actually split
+// one schema across files).
+
+TablePartial timestamps {
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+}
+
+TablePartial soft_delete {
+  deleted_at timestamp
+}
+
+Table merchants [headercolor: #3498DB] {
+  id integer [pk, increment]
+  country_code varchar(2) [not null]
+  name varchar(255) [not null]
+
+  ~timestamps
+
+  indexes {
+    (id, country_code) [unique]   // target for merchant_periods' composite FK below
+  }
+}
+
+Table merchant_periods {
+  id integer [pk, increment]
+  merchant_id integer [not null]
+  country_code varchar(2) [not null]
+  starts_on date [not null]
+  ends_on date
+
+  indexes {
+    (merchant_id, country_code)
+  }
+}
+
+// composite foreign key: (merchant_id, country_code) -> merchants.(id, country_code)
+Ref: merchant_periods.(merchant_id, country_code) > merchants.(id, country_code)
+
+Table products [owner: "catalog-team"] {
+  id integer [pk, increment]
+  merchant_id integer [not null, ref: > merchants.id]
+  sku varchar(64) [not null]
+  name varchar(255) [not null]
+  price decimal(10,2) [not null, default: 0]
+
+  ~timestamps
+  ~soft_delete
+
+  indexes {
+    (merchant_id, sku) [unique]
+    name [type: hash]
+  }
+}
+
+Table orders {
+  id integer [pk, increment]
+  customer_email varchar(255) [not null]
+  placed_at timestamp [default: `now()`]
+
+  ~timestamps
+}
+
+// many-to-many via an explicit join table (preferred over a bare `<>` ref
+// when you need the join table itself to exist in the exported SQL)
+Table order_items {
+  order_id integer [ref: > orders.id]
+  product_id integer [ref: > products.id]
+  quantity integer [not null, default: 1]
+
+  indexes {
+    (order_id, product_id) [pk]   // composite primary key
+  }
+}
+
+// documents a relationship that used to be modeled directly before
+// order_items existed — [inactive] renders it dotted instead of deleting it
+Ref: orders.id <> products.id [inactive]
+
+TableGroup catalog [color: #F4D03F, note: 'Product catalog & merchant data'] {
+  merchants
+  merchant_periods
+  products
+}
+
+Note pricing_note [color: #F4D03F] {
+  '''
+  Prices are stored in the merchant's local currency.
+  Convert using the daily FX snapshot before aggregating across merchants.
+  '''
+}
