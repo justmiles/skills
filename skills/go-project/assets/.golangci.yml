@@ -1,0 +1,42 @@
+version: "2"
+
+linters:
+  enable:
+    # standard
+    - errcheck
+    - govet
+    - revive
+    - staticcheck
+    # complexity / size
+    - maintidx
+    - funlen
+    - lll
+    # test quality
+    - testifylint
+    - thelper
+    - tparallel
+    - usetesting
+  settings:
+    maintidx:
+      under: 20
+    funlen:
+      lines: 80
+      statements: 60
+    lll:
+      line-length: 120
+    revive:
+      rules:
+        - name: file-length-limit
+          arguments:
+            - max: 500
+  exclusions:
+    rules:
+      # funlen is noisy on table-driven tests; exempt test files.
+      - path: _test\.go
+        linters:
+          - funlen
+
+formatters:
+  enable:
+    - gofmt
+    - goimports

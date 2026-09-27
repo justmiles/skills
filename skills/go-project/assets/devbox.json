@@ -1,0 +1,18 @@
+{
+  "packages": ["go@latest", "golangci-lint@latest"],
+  "shell": {
+    "scripts": {
+      "build": "go build ./...",
+      "test": "go test ./...",
+      "lint": "golangci-lint run ./...",
+      "run": "go run main.go",
+      "coverage": [
+        "go test -cover -coverprofile=coverage.txt ./...",
+        "go tool go-test-coverage --config .testcoverage.yml"
+      ],
+      "deadcode": [
+        "go tool deadcode ./..."
+      ]
+    }
+  }
+}
