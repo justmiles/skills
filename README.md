@@ -26,7 +26,7 @@ Use when the user wants to publish, upload, sync, or push markdown files to
 Confluence, or mentions Confluence documentation publishing.
 
 ```bash
-npx skills add justmiles/skills/confluence
+npx skills add justmiles/skills --skill confluence
 ```
 
 ### dbml
@@ -37,7 +37,7 @@ indexes, enums, and partials. Use when modeling a schema/ERD in DBML, converting
 between DBML and SQL, or working with the `dbml2sql`/`sql2dbml`/`db2dbml` CLI.
 
 ```bash
-npx skills add justmiles/skills/dbml
+npx skills add justmiles/skills --skill dbml
 ```
 
 ### go-project
@@ -50,7 +50,7 @@ or standardizing a Golang project, or asserting that an existing repo follows th
 conventions.
 
 ```bash
-npx skills add justmiles/skills/go-project
+npx skills add justmiles/skills --skill go-project
 ```
 
 ### jira
@@ -61,7 +61,7 @@ Use when the user wants to list, search, view, create, edit, transition, assign,
 comment on, or link Jira issues.
 
 ```bash
-npx skills add justmiles/skills/jira
+npx skills add justmiles/skills --skill jira
 ```
 
 ### likec4
@@ -72,7 +72,7 @@ Use when creating or updating a C4 architecture diagram, or working with the
 `likec4` CLI or the LikeC4 MCP server.
 
 ```bash
-npx skills add justmiles/skills/likec4
+npx skills add justmiles/skills --skill likec4
 ```
 
 ### outline-wiki
@@ -80,7 +80,7 @@ npx skills add justmiles/skills/likec4
 Search and manage Outline wiki documents and collections via the `ol` CLI.
 
 ```bash
-npx skills add justmiles/skills/outline-wiki
+npx skills add justmiles/skills --skill outline-wiki
 ```
 
 ### plaud
@@ -89,5 +89,5 @@ Access your Plaud recordings — browse, search, read transcripts, download audi
 and view AI summaries.
 
 ```bash
-npx skills add justmiles/skills/plaud
+npx skills add justmiles/skills --skill plaud
 ```

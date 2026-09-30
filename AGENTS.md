@@ -13,7 +13,7 @@ CLI, which copies a skill's files into a project's (or global) skills directory:
 npx skills add justmiles/skills
 
 # Add a single skill
-npx skills add justmiles/skills/skills/<name>
+npx skills add justmiles/skills --skill <name>
 ```
 
 ## Layout
